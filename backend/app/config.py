@@ -3,7 +3,22 @@ from typing import List, Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+import os
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+IS_SERVERLESS = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
+
+def _default_db_url() -> str:
+    if IS_SERVERLESS:
+        return "sqlite:////tmp/attendance.db"
+    return f"sqlite:///{BASE_DIR / 'attendance.db'}"
+
+
+def _default_storage_dir(subdir: str) -> Path:
+    if IS_SERVERLESS:
+        return Path("/tmp/data") / subdir
+    return BASE_DIR.parent / "data" / subdir
 
 
 class Settings(BaseSettings):
@@ -19,15 +34,15 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
 
     # Database
-    DATABASE_URL: str = f"sqlite:///{BASE_DIR / 'attendance.db'}"
+    DATABASE_URL: str = _default_db_url()
 
     # CORS
     CORS_ORIGINS: Union[str, List[str]] = "*"
 
     # Storage paths
-    FACES_DIR: Path = BASE_DIR.parent / "data" / "faces"
-    ATTENDANCE_PHOTOS_DIR: Path = BASE_DIR.parent / "data" / "attendance_photos"
-    CV_MODELS_DIR: Path = BASE_DIR.parent / "data" / "models"
+    FACES_DIR: Path = _default_storage_dir("faces")
+    ATTENDANCE_PHOTOS_DIR: Path = _default_storage_dir("attendance_photos")
+    CV_MODELS_DIR: Path = _default_storage_dir("models")
 
     # Computer Vision Settings
     FACE_MATCH_THRESHOLD: float = 0.60
@@ -87,9 +102,12 @@ class Settings(BaseSettings):
 
     def setup_directories(self) -> None:
         """Ensure necessary data and upload directories exist."""
-        self.FACES_DIR.mkdir(parents=True, exist_ok=True)
-        self.ATTENDANCE_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
-        self.CV_MODELS_DIR.mkdir(parents=True, exist_ok=True)
+        try:
+            self.FACES_DIR.mkdir(parents=True, exist_ok=True)
+            self.ATTENDANCE_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
+            self.CV_MODELS_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
 
 
 settings = Settings()

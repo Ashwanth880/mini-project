@@ -73,7 +73,10 @@ class FaceService:
         self.match_threshold = settings.FACE_MATCH_THRESHOLD
         self.min_confidence = settings.MIN_FACE_CONFIDENCE
         self.models_dir = settings.CV_MODELS_DIR
-        self.models_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.models_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
 
         self._detector: Optional[cv2.FaceDetectorYN] = None
         self._recognizer: Optional[cv2.FaceRecognizerSF] = None
