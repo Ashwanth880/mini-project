@@ -1,0 +1,22 @@
+# Web framework and server
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+python-multipart>=0.0.9
+
+# Settings and Data Validation
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+python-dotenv>=1.0.1
+email-validator>=2.0.0
+
+# Database ORM
+sqlalchemy>=2.0.28
+
+# Authentication & Security
+bcrypt>=4.0.0
+PyJWT>=2.8.0
+
+# Computer Vision & Image Processing
+opencv-python>=4.8.0
+numpy>=1.26.0
+pillow>=10.2.0
