@@ -2,17 +2,12 @@
  * API Client for One-Click Attendance System with JWT Authentication
  */
 
-const API_BASE_URL = window.location.origin.includes(':8000')
-  ? `${window.location.origin}/api/v1`
-  : 'http://127.0.0.1:8000/api/v1';
+const isSeparateFrontendPort = ['3000', '5500', '5173', '8080'].includes(window.location.port) || window.location.protocol === 'file:';
+const DEFAULT_HOST = isSeparateFrontendPort ? 'http://127.0.0.1:8000' : (window.location.origin || 'http://127.0.0.1:8000');
 
-const AUTH_BASE_URL = window.location.origin.includes(':8000')
-  ? `${window.location.origin}/auth`
-  : 'http://127.0.0.1:8000/auth';
-
-const HEALTH_URL = window.location.origin.includes(':8000')
-  ? `${window.location.origin}/health`
-  : 'http://127.0.0.1:8000/health';
+const API_BASE_URL = `${DEFAULT_HOST}/api/v1`;
+const AUTH_BASE_URL = `${DEFAULT_HOST}/auth`;
+const HEALTH_URL = `${DEFAULT_HOST}/health`;
 
 const Api = {
   getToken() {

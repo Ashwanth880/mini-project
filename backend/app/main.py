@@ -1,10 +1,16 @@
 import logging
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
+
+# Ensure backend directory is in sys.path regardless of execution working directory
+_BACKEND_ROOT = Path(__file__).resolve().parent.parent
+if str(_BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(_BACKEND_ROOT))
 
 from app.config import settings
 from app.database import init_db
